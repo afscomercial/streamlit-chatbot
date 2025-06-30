@@ -28,25 +28,12 @@ jobs:
           SPACE_REPO: ${{ secrets.SPACE_REPO }}
         run: |
           set -e
-          
-          # Default to <github user>/<repo name> if SPACE_REPO not provided
-          if [ -z "$SPACE_REPO" ]; then
-            SPACE_REPO="${{ github.repository }}"
-          fi
-          
+          if [ -z "$SPACE_REPO" ]; then SPACE_REPO="${{ github.repository }}"; fi
           echo "Using Space repository: $SPACE_REPO"
           
-          # Attempt to create the Space as a Docker Space using modern flags
-          if ! huggingface-cli repo create "$SPACE_REPO" --repo-type space --space-sdk docker -y 2>/dev/null; then
-            echo "Falling back to legacy flags (deprecated)."
-            if ! huggingface-cli repo create "$SPACE_REPO" --type space --space-sdk docker -y 2>/dev/null; then
-              echo "Unable to create Space with Docker SDK; creating default Space."
-              huggingface-cli repo create "$SPACE_REPO" --repo-type space -y || true
-            fi
-          fi
-
-          # Push all files to the Space
+          # No creation step needed – Space already exists
+          
           git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.name  "GitHub Actions"
           git remote add space "https://huggingface:$HF_TOKEN@huggingface.co/$SPACE_REPO" || true
           git push space HEAD:main --force 
