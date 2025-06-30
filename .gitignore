@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+.eggs/
+.eggs-info/
+*.egg
+*.egg-info/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# macOS files
+.DS_Store
+
+# Streamlit cache
+.streamlit/*.json
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/ 
