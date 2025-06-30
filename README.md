@@ -1,3 +1,13 @@
+---
+title: Streamlit Chatbot
+emoji: "🗨️"
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # Streamlit Chatbot ✨
 
 A lightweight chatbot built with [Streamlit](https://streamlit.io/) and the open-source `microsoft/DialoGPT-small` language model from [Hugging Face](https://huggingface.co/). This repository is ready to be deployed to [Hugging Face Spaces](https://huggingface.co/spaces) automatically through GitHub Actions.
