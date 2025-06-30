@@ -35,5 +35,5 @@ jobs:
           
           git config --global user.email "actions@github.com"
           git config --global user.name  "GitHub Actions"
-          git remote add space "https://huggingface:$HF_TOKEN@huggingface.co/$SPACE_REPO" || true
+          git remote add space "https://huggingface:$HF_TOKEN@huggingface.co/spaces/$SPACE_REPO" || true
           git push space HEAD:main --force 
