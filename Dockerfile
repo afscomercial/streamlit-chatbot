@@ -19,4 +19,4 @@ COPY . .
 # Hugging Face sets the PORT env variable (default 7860)
 EXPOSE 7860
 
-CMD streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true 
+CMD bash -c "streamlit run app.py --server.port ${PORT:-7860} --server.address 0.0.0.0 --server.headless true" 
