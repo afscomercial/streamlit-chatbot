@@ -52,18 +52,29 @@ The container entrypoint launches Streamlit on the port given by the `PORT` envi
 
 ---
 
-## Deploy to Hugging Face Spaces
+## Manual deploy to Hugging Face Spaces (CLI)
 
-1. **Create a new Space** (type: *Streamlit*) at `https://huggingface.co/new-space` or let the Action do it for you automatically.
-2. **Generate a write token** in your Hugging Face account settings and add it to the repository secrets as `HF_TOKEN`.
-3. Optionally add another secret called `SPACE_REPO` with the full name of the Space (e.g. `your-username/streamlit-chatbot`).
+If you'd rather push the repository yourself (skipping GitHub Actions):
 
-On each push to the `main` branch the GitHub workflow located at `.github/workflows/deploy-to-spaces.yml` will:
+```bash
+# 1. Authenticate once (stores your token locally)
+huggingface-cli login   # paste your HF_TOKEN when prompted
 
-* Check out the code.
-* Install the `huggingface_hub` CLI.
-* Create the Space (if it doesn't exist).
-* Force-push the contents of the repository to the Space, triggering a rebuild and redeploy.
+# 2. (First time only) create the Space as a Docker Space
+huggingface-cli repo create afscomercial/streamlit-chatbot \
+  --repo-type space --space-sdk docker -y  # change the name accordingly
+
+# 3. Add the new remote and push
+cd path/to/streamlit_chatbot
+
+git lfs install                 # enables Large-File Storage just in case
+git remote add hf \
+  https://huggingface.co/spaces/afscomercial/streamlit-chatbot
+
+git push hf main --force        # overwrite contents of the Space
+```
+
+After the push the Space will rebuild the Docker image and redeploy automatically.
 
 ---
 

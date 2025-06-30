@@ -21,4 +21,6 @@ COPY . .
 # Hugging Face sets the PORT env variable (default 7860)
 EXPOSE 7860
 
+RUN mkdir -p /app/cache && chmod 777 /app/cache
+
 CMD bash -c "streamlit run app.py --server.port ${PORT:-7860} --server.address 0.0.0.0 --server.headless true" 
