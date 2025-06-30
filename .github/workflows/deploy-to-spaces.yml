@@ -36,7 +36,7 @@ jobs:
           echo "Using Space repository: $SPACE_REPO"
           
           # Create the Space if it does not exist
-          huggingface-cli repo create "$SPACE_REPO" --type space --space-sdk streamlit -y || true
+          huggingface-cli repo create "$SPACE_REPO" --type space --space-sdk docker -y || true
 
           # Push all files to the Space
           git config --global user.email "actions@github.com"

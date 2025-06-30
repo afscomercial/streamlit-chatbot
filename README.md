@@ -26,6 +26,22 @@ The app will open in your browser at `http://localhost:8501`.
 
 ---
 
+## Quick start (Docker)
+
+If you prefer to run the chatbot in a container instead of a local virtual-env, use the provided `Dockerfile`.
+
+```bash
+# 1. Build the image (tagged "streamlit-chatbot")
+docker build -t streamlit-chatbot .
+
+# 2. Run the container and expose the app on http://localhost:8501
+docker run --rm -it -e PORT=8501 -p 8501:8501 streamlit-chatbot
+```
+
+The container entrypoint launches Streamlit on the port given by the `PORT` environment variable (the same variable Hugging Face uses). By passing `-e PORT=8501` and mapping `-p 8501:8501`, you can access the interface in your browser at `http://localhost:8501`.
+
+---
+
 ## Deploy to Hugging Face Spaces
 
 1. **Create a new Space** (type: *Streamlit*) at `https://huggingface.co/new-space` or let the Action do it for you automatically.
@@ -52,5 +68,6 @@ On each push to the `main` branch the GitHub workflow located at `.github/workfl
 ├── .github/
 │   └── workflows/
 │       └── deploy-to-spaces.yml  # CI/CD pipeline
+├── Dockerfile              # Container definition for Docker/HF Spaces
 └── README.md
 ```
