@@ -19,7 +19,8 @@ jobs:
       - name: Install Hugging Face Hub CLI
         run: |
           python -m pip install --upgrade pip
-          pip install huggingface_hub[cli]
+          # Install a recent version that supports --space-sdk
+          pip install "huggingface_hub[cli]>=0.22.0"
 
       - name: Push to Hugging Face Space
         env:
@@ -35,8 +36,11 @@ jobs:
           
           echo "Using Space repository: $SPACE_REPO"
           
-          # Create the Space if it does not exist
-          huggingface-cli repo create "$SPACE_REPO" --type space --space-sdk docker -y || true
+          # Attempt to create the Space as a Docker Space (requires CLI >= 0.22)
+          if ! huggingface-cli repo create "$SPACE_REPO" --type space --space-sdk docker -y 2>/dev/null; then
+            echo "'--space-sdk docker' not supported in current huggingface-cli, creating as generic Space instead."
+            huggingface-cli repo create "$SPACE_REPO" --type space -y || true
+          fi
 
           # Push all files to the Space
           git config --global user.email "actions@github.com"
