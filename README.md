@@ -167,4 +167,35 @@ export MODEL_REPO="your-username/streamlit-chatbot-aviation"
 streamlit run app.py
 ```
 
+## Architecture
+
+```mermaid
+graph TD
+  subgraph "Frontend"
+    U["User<br/>Browser"] -->|"HTTP 8501"| A["Streamlit<br/>Chatbot (app.py)"]
+  end
+
+  subgraph "Backend"
+    A -->|"Load fine-tuned weights<br/>+ tokenizer"| M["LLM<br/>DialoGPT-fine-tuned"]
+    A -->|"Generate reply"| M
+    M -->|"Response"| A
+  end
+
+  subgraph "Model Hub"
+    MH["Hugging Face<br/>Model Repo"]
+  end
+  MH --> M
+
+  subgraph "Training"
+    DS["Dataset<br/>aviation_conversations.jsonl"]
+    FT["fine_tune.py<br/>(HF Trainer)"]
+    DS --> FT
+    FT -->|"Push to Hub"| MH
+  end
+
+  CI["GitHub Actions<br/>train-model.yml"] --> FT
+  CI2["GitHub Actions<br/>deploy-to-spaces.yml"] -->|"Docker Image"| HFSpace["HF Space<br/>Docker Runtime"]
+  HFSpace --> A
+```
+
 ---
