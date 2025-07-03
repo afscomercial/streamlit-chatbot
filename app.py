@@ -1,12 +1,13 @@
 import streamlit as st
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+import os
 
 
 @st.cache_resource(show_spinner=False)
 def load_model():
     """Load the DialoGPT-small model and tokenizer once and cache them."""
-    model_name = "microsoft/DialoGPT-small"
+    model_name = os.getenv("MODEL_REPO", "afscomercial/streamlit-chatbot-aviation")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
     return tokenizer, model

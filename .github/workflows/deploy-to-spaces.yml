@@ -33,7 +33,7 @@ jobs:
           if [ -z "$SPACE_REPO" ]; then SPACE_REPO="${{ github.repository }}"; fi
           echo "Using Space repository: $SPACE_REPO"
           
-          # No creation step needed – Space already exists
+          # No creation step needed - Space already exists
           
           git config --global user.email "actions@github.com"
           git config --global user.name  "GitHub Actions"

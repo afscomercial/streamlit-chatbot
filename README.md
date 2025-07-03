@@ -82,13 +82,89 @@ After the push the Space will rebuild the Docker image and redeploy automaticall
 
 ```
 .
-├── app.py                  # Streamlit application
-├── requirements.txt        # Python dependencies
+├── app.py                      # Streamlit application – chat UI
+├── fine_tune.py                # Script to fine-tune the base LLM on JSONL data
+├── requirements.txt            # Python dependencies
+├── data/                       # Example datasets (small, can live in git)
+│   └── aviation_conversations.jsonl
+├── research/                   # Jupyter notebooks / ad-hoc DS experiments (untracked by CI)
 ├── .streamlit/
-│   └── config.toml         # UI & server settings
+│   └── config.toml             # UI & server settings
 ├── .github/
 │   └── workflows/
-│       └── deploy-to-spaces.yml  # CI/CD pipeline
-├── Dockerfile              # Container definition for Docker/HF Spaces
+│       ├── deploy-to-spaces.yml  # CI/CD – auto-deploy app
+├── Dockerfile                  # Container definition for Docker/HF Spaces
 └── README.md
 ```
+
+## Research folder
+The `research/` directory is reserved for exploratory notebooks, data-science experiments, and scratch work that shouldn't affect the production application. Feel free to place notebooks, CSVs, or prototype scripts here. Anything computationally heavy or containing large files should **not** be committed; the folder is in the `.gitignore` by default.
+
+## Fine-tuning the model (aviation example)
+
+This repo ships with a tiny JSON-Lines dataset in `data/` that contains sample Q&A about aviation. A GitHub Action (`train-model.yml`) fine-tunes `microsoft/DialoGPT-small` on that data and pushes the checkpoint to the Hub as `afscomercial/streamlit-chatbot-aviation` (or the repo name you set in the `MODEL_REPO` secret).
+
+You can also run it locally:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+export HF_TOKEN=YOUR_WRITE_TOKEN
+export MODEL_REPO="afscomercial/streamlit-chatbot-aviation"
+python fine_tune.py
+```
+
+The script will train for one epoch (change `EPOCHS` if you wish) and push the new weights to the model repo.
+
+### Where the model is used
+`app.py` now reads the environment variable `MODEL_REPO` (defaulting to `afscomercial/streamlit-chatbot-aviation`). At startup, the Streamlit app downloads the fine-tuned checkpoint instead of the vanilla DialoGPT model.
+
+### Pushing the fine-tuned model to the Hub
+
+There are two convenient ways to upload your checkpoint to the Hub once the training run is finished.
+
+#### Option 1 — let the training script push automatically
+`fine_tune.py` ends with `trainer.push_to_hub()`, so you only need to:
+
+```bash
+# 1 · Authenticate once (stores your token locally)
+huggingface-cli login                     # paste your HF access token
+
+# 2 · (First time only) create the model repo on the Hub
+huggingface-cli repo create <USER>/<MODEL_REPO> -y
+#     e.g.  huggingface-cli repo create your-username/streamlit-chatbot-aviation -y
+
+# 3 · Point the run to that repo (default shown below)
+export MODEL_REPO="your-username/streamlit-chatbot-aviation"
+
+# 4 · Launch training — the script will commit + push automatically
+python fine_tune.py
+```
+
+#### Option 2 — push an existing folder manually
+If you already have the fine-tuned files on disk (e.g. in `finetuned-aviation/`):
+
+```bash
+# 1 · Create the repo once
+huggingface-cli repo create your-username/streamlit-chatbot-aviation -y
+
+# 2 · Clone the empty repo & copy your files into it
+git clone https://huggingface.co/your-username/streamlit-chatbot-aviation
+cd streamlit-chatbot-aviation
+cp -r /path/to/finetuned-aviation/* .
+
+# 3 · Commit and push
+git add .
+git commit -m "First fine-tuned checkpoint"
+git push
+```
+
+After the checkpoint is online, simply point the Streamlit app to it (locally or on Spaces) with:
+
+```bash
+export MODEL_REPO="your-username/streamlit-chatbot-aviation"
+streamlit run app.py
+```
+
+---

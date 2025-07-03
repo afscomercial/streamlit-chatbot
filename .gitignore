@@ -35,4 +35,39 @@ ENV/
 .streamlit/*.json
 
 # Jupyter Notebook checkpoints
-.ipynb_checkpoints/ 
+.ipynb_checkpoints/
+
+# ------------------------------
+# Project-specific ignores
+# ------------------------------
+# Hugging Face / Transformers caches
+.cache/
+~/.cache/huggingface/
+
+# Finetuned model artifacts and checkpoints
+finetuned-aviation/
+*.ckpt
+checkpoint-*/
+
+# Logs & experiment outputs
+*.log
+logs/
+
+# Testing and type-checking caches
+.pytest_cache/
+.mypy_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Local environment variables / secrets
+.env
+.env.*
+
+# Misc editor / OS files
+*.swp
+.idea/
+.vscode/
+
+# Streamlit generated files
+.streamlit/state.json 
